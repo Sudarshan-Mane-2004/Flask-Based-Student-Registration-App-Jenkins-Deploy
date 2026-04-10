@@ -24,13 +24,16 @@ pipeline {
         }
 
         stage('Run Application') {
-            steps {
-                sh '''
-                . venv/bin/activate
-                nohup python3 app.py > app.log 2>&1 &
-                '''
-            }
-        }
+    steps {
+        sh '''
+        . venv/bin/activate
+        pkill -f app.py || true
+        nohup python3 app.py > app.log 2>&1 &
+        sleep 5
+        ps -ef | grep app.py
+        '''
+    }
+}
 
         stage('Verify App') {
             steps {
