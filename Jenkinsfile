@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                python3 -m venv venv || true
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Stop Old App') {
+            steps {
+                sh '''
+                pkill -f app.py || true
+                pkill gunicorn || true
+                '''
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                nohup python3 app.py > app.log 2>&1 &
+                '''
+            }
+        }
+
+        stage('Verify App') {
+            steps {
+                sh '''
+                sleep 5
+                curl -I http://localhost:5000 || true
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ CI/CD Success"
+        }
+        failure {
+            echo "❌ CI/CD Failed"
+        }
+    }
+}
