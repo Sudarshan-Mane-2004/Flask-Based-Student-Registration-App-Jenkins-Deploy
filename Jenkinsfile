@@ -4,15 +4,17 @@ pipeline {
     stages {
 
         stage('Install Dependencies') {
-            steps {
-                sh '''
-                python3 -m venv venv || true
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                '''
-            }
-        }
+    steps {
+        sh '''
+        sudo apt update
+        sudo apt install -y python3-venv || true
+
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install -r requirements.txt
+        '''
+    }
+}
 
         stage('Stop Old App') {
             steps {
