@@ -39,5 +39,22 @@ def register():
         return 'Student Registered Successfully!'
     return render_template('register.html')
 
+
+# ✅ ADD THIS NEW ROUTE HERE 👇
+@app.route('/students')
+def view_students():
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM students")
+    students = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('students.html', students=students)
+
+
+# Run app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
